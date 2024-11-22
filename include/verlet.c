@@ -1,6 +1,4 @@
-// verlet.c
-
-#include "ljmdi.h"
+#include "ljmd.h"
 
 static void velverlet_first_half(mdsys_t *sys) {
     int i;
