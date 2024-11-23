@@ -6,13 +6,13 @@ if(POLICY CMP0135)
   cmake_policy(SET CMP0135 OLD)
 endif()
 
-add_library(mdlib include/utilities.c include/verlet.c include/output.c include/input.c include/force.c include/cleanup.c)
+add_library(mdlib SHARED include/utilities.c include/output.c include/input.c include/force.c include/cleanup.c)
 
-add_compile_options(-Wall -g -O3 -ffast-math -fomit-frame-pointer -DLJMD_VERSION=1.0)
+add_compile_options(-Wall -g -O3 -ffast-math -fomit-frame-pointer -ffp-contract=fast -DLJMD_VERSION=1.0)
 
 add_executable(ljmd src/main.c)
 
-target_link_libraries(ljmd PRIVATE mdlib -lm) 
+target_link_libraries(ljmd mdlib m) 
 
 option(ENABLE_TESTING "Enable building unit tests" OFF)
 
