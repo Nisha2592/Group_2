@@ -11,15 +11,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <sys/time.h>
-
-
-/*generic file- or pathname buffer length*/
-#define BLEN 200
-
-
-/*a few physical constants*/
-const double kboltz=0.0019872067;  /* boltzman constant in kcal/mol/K */
-const double mvsq2e=2390.05736153349; /* m*v^2 in kcal/mol */
+#include "../include/ljmd.h"
 
 
 /* main */
@@ -121,16 +113,8 @@ int main(int argc, char **argv)
     printf("Simulation Done. Run time: %10.3fs\n", wallclock()-t_start);
     fclose(erg);
     fclose(traj);
-
-    free(sys.rx);
-    free(sys.ry);
-    free(sys.rz);
-    free(sys.vx);
-    free(sys.vy);
-    free(sys.vz);
-    free(sys.fx);
-    free(sys.fy);
-    free(sys.fz);
-
+    
+    cleanup(&sys);
+ 
     return 0;
 }
