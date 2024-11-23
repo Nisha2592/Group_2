@@ -15,6 +15,9 @@ const double mvsq2e=2390.05736153349;
 
 
 double wallclock()
+#include <ljmd.h>
+
+/* helper function: get current time in seconds since epoch */
 {
         struct timeval t;
         gettimeofday(&t,0);
