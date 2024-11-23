@@ -13,6 +13,7 @@
 #include <sys/time.h>
 #include "../include/ljmd.h"
 
+#define BLEN 200
 
 /* main */
 int main(int argc, char **argv)
@@ -104,7 +105,10 @@ int main(int argc, char **argv)
             output(&sys, erg, traj);
 
         /* propagate system and recompute energies */
-        velverlet(&sys);
+        //velverlet(&sys);
+        velverlet_step1(&sys);
+        force(&sys);
+        velverlet_step2(&sys);
         ekin(&sys);
     }
     /**************************************************/
