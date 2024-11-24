@@ -36,60 +36,56 @@ void velverlet_step2(mdsys_t *sys) {
 
 
 /* compute forces */
-void force(mdsys_t *sys)
+void force(mdsys_t *sys) 
 {
-    double r,ffac, c12, c6;
-    double rx,ry,rz, rcsq, rsq;
-    int i,j;
+    double r, ffac;
+    double rx, ry, rz, rcsq, rsq;
+    double c12, c6;
+    int i, j;
 
     /* zero energy and forces */
-    sys->epot=0.0;
-    azzero(sys->fx,sys->natoms);
-    azzero(sys->fy,sys->natoms);
-    azzero(sys->fz,sys->natoms);
+    sys->epot = 0.0;
+    azzero(sys->fx, sys->natoms);
+    azzero(sys->fy, sys->natoms);
+    azzero(sys->fz, sys->natoms);
 
-    // --------------- OPTIMIZATION ATTEMPT II ---------------
-    // Removing expensive math using
-    c12 = 4.0 * sys->epsilon * pow(sys->sigma,12.0);
+    /* precompute some constants */
+    c12 = 4.0 * sys->epsilon * pow(sys->sigma, 12.0);
     c6 = 4.0 * sys->epsilon * pow(sys->sigma, 6.0);
     rcsq = sys->rcut * sys->rcut;
 
-    // --------------- OPTIMIZATION ATTEMPT I -----------------
-    // Newton 3rd law
-    for(i=0; i < (sys->natoms) - 1; ++i) {
-        for(j= i + 1; j < (sys->natoms); ++j) {
-
-            /* particles have no interactions with themselves */
-            // if (i==j) continue;
+    for (i = 0; i < (sys->natoms) - 1; ++i) {
+        for (j = i + 1; j < (sys->natoms); ++j) {
 
             /* get distance between particle i and j */
-            rx=pbc(sys->rx[i] - sys->rx[j], 0.5*sys->box);
-            ry=pbc(sys->ry[i] - sys->ry[j], 0.5*sys->box);
-            rz=pbc(sys->rz[i] - sys->rz[j], 0.5*sys->box);
-            rsq = rx*rx + ry*ry + rz*rz;
-
+            rx = pbc(sys->rx[i] - sys->rx[j], 0.5 * sys->box);
+            ry = pbc(sys->ry[i] - sys->ry[j], 0.5 * sys->box);
+            rz = pbc(sys->rz[i] - sys->rz[j], 0.5 * sys->box);
+            rsq = rx * rx + ry * ry + rz * rz;
 
             /* compute force and energy if within cutoff */
             if (rsq < rcsq) {
-                double r6, rinv;
-                rinv = 1.0/rsq;
-                r6 = rinv * rinv * rinv;
-                ffac = (12.0 * c12 * r6 - 6.0 * c6) * r6 * rinv;
-                sys->epot += r6 * (c12 * r6 - c6);
+                double r2inv, r6inv, r12inv;
+                
+                // Precompute reciprocal of distance squared
+                r2inv = 1.0 / rsq;
+                r6inv = r2inv * r2inv * r2inv; // r^(-6)
+                r12inv = r6inv * r6inv;        // r^(-12)
+                    
+                // Force factor
+                ffac = (12.0 * c12 * r12inv - 6.0 * c6 * r6inv) * r2inv;
 
-                // Consider action in i direction,
-                sys->fx[i] += rx*ffac;
-                sys->fy[i] += ry*ffac;
-                sys->fz[i] += rz*ffac;
-                // then the reaction in the j direction.
-                sys->fx[i] -= rx*ffac;
-                sys->fy[i] -= ry*ffac;
-                sys->fz[i] -= rz*ffac;
+                // Accumulate potential energy
+                sys->epot += c12 * r12inv - c6 * r6inv;
+
+                // Update forces
+                sys->fx[i] += rx * ffac;
+                sys->fy[i] += ry * ffac;
+                sys->fz[i] += rz * ffac;
+                sys->fx[j] -= rx * ffac;
+                sys->fy[j] -= ry * ffac;
+                sys->fz[j] -= rz * ffac;
             }
         }
     }
 }
-
-
-
-
