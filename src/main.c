@@ -107,6 +107,7 @@ int main(int argc, char **argv)
         /* propagate system and recompute energies */
         //velverlet(&sys);
         velverlet_step1(&sys);
+        force(&sys);
         velverlet_step2(&sys);
         ekin(&sys);
     }
