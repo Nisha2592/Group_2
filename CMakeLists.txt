@@ -8,7 +8,7 @@ endif()
 
 add_library(mdlib SHARED include/utilities.c include/output.c include/input.c include/force.c include/cleanup.c)
 
-add_compile_options(-Wall -g -O3 -ffast-math -fomit-frame-pointer -ffp-contract=fast -DLJMD_VERSION=1.0)
+add_compile_options(-Wall -O3 -ffast-math -fexpensive-optimizations -fomit-frame-pointer -ffp-contract=fast -msse3 -DLJMD_VERSION=1.0)
 add_executable(ljmd src/main.c)
 
 target_link_libraries(ljmd mdlib m) 
