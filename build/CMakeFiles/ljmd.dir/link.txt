@@ -1,0 +1,1 @@
+/usr/bin/cc -fopenmp CMakeFiles/ljmd.dir/src/main.c.o -o ljmd  -Wl,-rpath,"/home/christian/Desktop/MHPC_LECTURES/11_week*/Group_2/build" libmdlib.so -lm /usr/lib/gcc/x86_64-linux-gnu/13/libgomp.so /usr/lib/x86_64-linux-gnu/libpthread.a 
