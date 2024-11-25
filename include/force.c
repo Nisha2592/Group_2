@@ -11,13 +11,26 @@ const double mvsq2e=2390.05736153349;
 
 void velverlet_step1(mdsys_t *sys) {
     int i;
-    for (i = 0; i < sys->natoms; ++i) {
-        sys->vx[i] += 0.5 * sys->dt / mvsq2e * sys->fx[i] / sys->mass;
-        sys->vy[i] += 0.5 * sys->dt / mvsq2e * sys->fy[i] / sys->mass;
-        sys->vz[i] += 0.5 * sys->dt / mvsq2e * sys->fz[i] / sys->mass;
-        sys->rx[i] += sys->dt * sys->vx[i];
-        sys->ry[i] += sys->dt * sys->vy[i];
-        sys->rz[i] += sys->dt * sys->vz[i];
+    double natoms = sys->natoms;
+    double mass = sys->mass;
+    double dt = sys->dt;
+    double *fx = sys->fx;
+    double *fy = sys->fy;
+    double *fz = sys->fz;
+    double *vx = sys->vx;
+    double *vy = sys->vy;
+    double *vz = sys->vz;
+    double *rx = sys->rx;
+    double *ry = sys->ry;
+    double *rz = sys->rz;
+    double constant = 0.5 * dt * 1.0 / mvsq2e * 1.0 / mass;
+    for (i = 0; i < natoms; ++i) {
+        vx[i] += constant * fx[i];
+        vy[i] += constant * fy[i];
+        vz[i] += constant * fz[i];
+        rx[i] += dt * sys->vx[i];
+        ry[i] += dt * sys->vy[i];
+        rz[i] += dt * sys->vz[i];
     }
 
 }
@@ -26,10 +39,20 @@ void velverlet_step2(mdsys_t *sys) {
     /* compute forces and potential energy */
     //force(sys);
     int i;
-    for (i = 0; i < sys->natoms; ++i) {
-        sys->vx[i] += 0.5 * sys->dt / mvsq2e * sys->fx[i] / sys->mass;
-        sys->vy[i] += 0.5 * sys->dt / mvsq2e * sys->fy[i] / sys->mass;
-        sys->vz[i] += 0.5 * sys->dt / mvsq2e * sys->fz[i] / sys->mass;
+    double natoms = sys->natoms;
+    double mass = sys->mass;
+    double dt = sys->dt;
+    double *fx = sys->fx;
+    double *fy = sys->fy;
+    double *fz = sys->fz;
+    double *vx = sys->vx;
+    double *vy = sys->vy;
+    double *vz = sys->vz;
+    double constant = 0.5 * dt * 1.0 / mvsq2e * 1.0 / mass;
+    for (i = 0; i < natoms; ++i) {
+        vx[i] += constant * fx[i];
+        vy[i] += constant * fy[i];
+        vz[i] += constant * fz[i];
     }
 }
 
