@@ -32,7 +32,7 @@ extern double wallclock();
 
 extern void azzero(double *d, const int n);
 
-extern double pbc(double x, const double boxby2);
+extern double pbc(double x, const double boxby2, const double Box);
 
 extern void ekin(mdsys_t *sys);
 
