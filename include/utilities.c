@@ -31,10 +31,10 @@ void azzero(double *d, const int n)
 }
 
 /* helper function: apply minimum image convention */
-double pbc(double x, const double boxby2)
+double pbc(double x, const double boxby2, const double Box)
 {
-    while (x >  boxby2) x -= 2.0*boxby2;
-    while (x < -boxby2) x += 2.0*boxby2;
+    while (x >  boxby2) x -= Box;
+    while (x < -boxby2) x += Box;
     return x;
 }
 
@@ -42,10 +42,16 @@ double pbc(double x, const double boxby2)
 void ekin(mdsys_t *sys)
 {
     int i;
-
+    double natoms = sys->natoms;
+    double mass = sys->mass;
+    double *vx = sys->vx;
+    double *vy = sys->vy;
+    double *vz = sys->vz;
+    double constant = 0.5 * mvsq2e * mass;
+    double constant2 = 2.0 / (3.0*natoms-3.0) * 1.0 / kboltz;
     sys->ekin=0.0;
-    for (i=0; i<sys->natoms; ++i) {
-        sys->ekin += 0.5*mvsq2e*sys->mass*(sys->vx[i]*sys->vx[i] + sys->vy[i]*sys->vy[i] + sys->vz[i]*sys->vz[i]);
+    for (i=0; i<natoms; ++i) {
+        sys->ekin += constant * (vx[i]*vx[i] + vy[i]*vy[i] + vz[i]*vz[i]);
     }
-    sys->temp = 2.0*sys->ekin/(3.0*sys->natoms-3.0)/kboltz;
+    sys->temp = sys->ekin * constant2;
 }
