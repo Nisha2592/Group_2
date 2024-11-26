@@ -13,7 +13,6 @@
 #include <sys/time.h>
 #include "../include/ljmd.h"
 
-
 #define BLEN 200
 
 /* main */
@@ -113,8 +112,6 @@ int main(int argc, char **argv)
         ekin(&sys);
     }
     /**************************************************/
-
-    /* clean up: close files, free memory */
     printf("Simulation Done. Run time: %10.3fs\n", wallclock()-t_start);
     fclose(erg);
     fclose(traj);

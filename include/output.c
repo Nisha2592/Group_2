@@ -12,4 +12,3 @@ void output(mdsys_t *sys, FILE *erg, FILE *traj) {
         fprintf(traj, "Ar  %20.8f %20.8f %20.8f\n", sys->rx[i], sys->ry[i], sys->rz[i]);
     }
 }
-

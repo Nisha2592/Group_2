@@ -10,6 +10,7 @@
 const double kboltz=0.0019872067;
 const double mvsq2e=2390.05736153349;
 
+
 void velverlet_step1(mdsys_t *sys) {
     int i;
     double natoms = sys->natoms;
@@ -35,6 +36,7 @@ void velverlet_step1(mdsys_t *sys) {
     }
 
 }
+
 
 void velverlet_step2(mdsys_t *sys) {
     /* compute forces and potential energy */

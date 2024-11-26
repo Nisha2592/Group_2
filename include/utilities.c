@@ -11,9 +11,8 @@
 //const double mvsq2e=2390.05736153349;
 extern const double kboltz;
 extern const double mvsq2e;
+
 /* helper function: get current time in seconds since epoch */
-
-
 double wallclock()
 {
         struct timeval t;
@@ -39,3 +38,4 @@ void ekin(mdsys_t *sys)
     }
     sys->temp = sys->ekin * constant2;
 }
+
