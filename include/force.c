@@ -75,9 +75,9 @@ void force(mdsys_t *sys)
             if (i==j) continue;
 
             /* get distance between particle i and j */
-            rx=pbc(sys->rx[i] - sys->rx[j], 0.5*sys->box);
-            ry=pbc(sys->ry[i] - sys->ry[j], 0.5*sys->box);
-            rz=pbc(sys->rz[i] - sys->rz[j], 0.5*sys->box);
+            rx=pbc(sys->rx[i] - sys->rx[j], 0.5*sys->box, sys->box);
+            ry=pbc(sys->ry[i] - sys->ry[j], 0.5*sys->box, sys->box);
+            rz=pbc(sys->rz[i] - sys->rz[j], 0.5*sys->box, sys->box);
             r = sqrt(rx*rx + ry*ry + rz*rz);
 
             /* compute force and energy if within cutoff */
