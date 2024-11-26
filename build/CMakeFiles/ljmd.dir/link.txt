@@ -1,1 +1,0 @@
-/usr/bin/cc CMakeFiles/ljmd.dir/src/main.c.o -o ljmd  -Wl,-rpath,"/home/christian/Desktop/MHPC_LECTURES/11_week*/Group_2/build:/usr/lib/x86_64-linux-gnu/openmpi/lib" libmdlib.so -lm /usr/lib/x86_64-linux-gnu/openmpi/lib/libmpi.so 

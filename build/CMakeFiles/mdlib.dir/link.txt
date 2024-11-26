@@ -1,1 +1,0 @@
-/usr/bin/cc -fPIC -shared -Wl,-soname,libmdlib.so -o libmdlib.so CMakeFiles/mdlib.dir/include/utilities.c.o CMakeFiles/mdlib.dir/include/output.c.o CMakeFiles/mdlib.dir/include/input.c.o CMakeFiles/mdlib.dir/include/force.c.o CMakeFiles/mdlib.dir/include/cleanup.c.o 
