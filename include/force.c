@@ -1,8 +1,5 @@
-#include <stdio.h>
-#include <string.h>
-#include <ctype.h>
-#include <stdlib.h>
 #include <math.h>
+#include <mpi.h>
 #include <sys/time.h>
 #include "ljmd.h"
 
@@ -34,58 +31,72 @@ void velverlet_step2(mdsys_t *sys) {
 }
 
 
+void force(mdsys_t *sys, int rank, int size, MPI_Comm comm) {
 
-/* compute forces */
-void force(mdsys_t *sys) 
-{
-    double r, ffac;
-    double rx, ry, rz, rcsq, rsq;
-    double c12, c6;
-    int i, j;
+    double r,ffac;
+    double rx,ry,rz;
+    int i,j;
 
     /* zero energy and forces */
-    sys->epot = 0.0;
-    azzero(sys->fx, sys->natoms);
-    azzero(sys->fy, sys->natoms);
-    azzero(sys->fz, sys->natoms);
+    sys->epot=0.0;
+    azzero(sys->fx,sys->natoms);
+    azzero(sys->fy,sys->natoms);
+    azzero(sys->fz,sys->natoms);
 
-    /* precompute some constants */
-    c12 = 4.0 * sys->epsilon * pow(sys->sigma, 12.0);
-    c6 = 4.0 * sys->epsilon * pow(sys->sigma, 6.0);
-    rcsq = sys->rcut * sys->rcut;
+    /*set auxiliary data to 0*/
+    double epot = 0.0;
+    azzero(sys->cx,sys->natoms);
+    azzero(sys->cy,sys->natoms);
+    azzero(sys->cz,sys->natoms);
 
-    for (i = 0; i < (sys->natoms) - 1; ++i) {
-        for (j = i + 1; j < (sys->natoms); ++j) {
+    /*broadcats particles positions from process of rank 0 to other ranks*/
+    MPI_Bcast(sys->rx, sys->natoms, MPI_DOUBLE, 0, comm);
+    MPI_Bcast(sys->ry, sys->natoms, MPI_DOUBLE, 0, comm);
+    MPI_Bcast(sys->rz, sys->natoms, MPI_DOUBLE, 0, comm);
+
+    int ii;
+
+    for(i=0; i < (sys->natoms); i+=size) {
+        /*round robin distributions*/
+        ii = i + rank;
+        if (ii > sys->natoms) {
+            break;
+        }
+        for(j=0; j < (sys->natoms); ++j) {
+
+            /* particles have no interactions with themselves */
+            if (ii==j) continue;
 
             /* get distance between particle i and j */
-            rx = pbc(sys->rx[i] - sys->rx[j], 0.5 * sys->box);
-            ry = pbc(sys->ry[i] - sys->ry[j], 0.5 * sys->box);
-            rz = pbc(sys->rz[i] - sys->rz[j], 0.5 * sys->box);
-            rsq = rx * rx + ry * ry + rz * rz;
+            rx=pbc(sys->rx[ii] - sys->rx[j], 0.5*sys->box);
+            ry=pbc(sys->ry[ii] - sys->ry[j], 0.5*sys->box);
+            rz=pbc(sys->rz[ii] - sys->rz[j], 0.5*sys->box);
+            // this can be avoid since we are using even powers of r
+            r = sqrt(rx*rx + ry*ry + rz*rz);
 
             /* compute force and energy if within cutoff */
-            if (rsq < rcsq) {
-                double r2inv, r6inv, r12inv;
-                
-                // Precompute reciprocal of distance squared
-                r2inv = 1.0 / rsq;
-                r6inv = r2inv * r2inv * r2inv; // r^(-6)
-                r12inv = r6inv * r6inv;        // r^(-12)
-                    
-                // Force factor
-                ffac = (12.0 * c12 * r12inv - 6.0 * c6 * r6inv) * r2inv;
+            if (r < sys->rcut) {
 
-                // Accumulate potential energy
-                sys->epot += c12 * r12inv - c6 * r6inv;
+                ffac = -4.0*sys->epsilon*(-12.0*pow(sys->sigma/r,12.0)/r
+                                         +6*pow(sys->sigma/r,6.0)/r);
 
-                // Update forces
-                sys->fx[i] += rx * ffac;
-                sys->fy[i] += ry * ffac;
-                sys->fz[i] += rz * ffac;
-                sys->fx[j] -= rx * ffac;
-                sys->fy[j] -= ry * ffac;
-                sys->fz[j] -= rz * ffac;
+                //store results to auxiliary
+                epot += 0.5*4.0*sys->epsilon*(pow(sys->sigma/r,12.0)
+                                               -pow(sys->sigma/r,6.0));
+
+                sys->cx[ii] += rx/r*ffac;
+                sys->cy[ii] += ry/r*ffac;
+                sys->cz[ii] += rz/r*ffac;
             }
         }
     }
+
+    //sum forces contribution from all process to process of rank 0
+    MPI_Reduce(sys->cx, sys->fx, sys->natoms, MPI_DOUBLE, MPI_SUM, 0, comm);
+    MPI_Reduce(sys->cy, sys->fy, sys->natoms, MPI_DOUBLE, MPI_SUM, 0, comm);
+    MPI_Reduce(sys->cz, sys->fz, sys->natoms, MPI_DOUBLE, MPI_SUM, 0, comm);
+
+    //sum potential energy contribution from all ranks to process of rank 0
+    MPI_Reduce(&epot, &(sys->epot), 1, MPI_DOUBLE, MPI_SUM, 0, comm);
+
 }
