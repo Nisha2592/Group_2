@@ -6,7 +6,7 @@ if(POLICY CMP0135)
   cmake_policy(SET CMP0135 OLD)
 endif()
 
-add_library(mdlib SHARED include/utilities.c include/output.c include/input.c include/force.c include/cleanup.c)
+add_library(mdlib SHARED include/utilities.c include/output.c include/input.c include/force.c include/cleanup.c include/allocation.c)
 
 add_compile_options(-Wall -O3 -ffast-math -fexpensive-optimizations -ffp-contract=fast -msse3 -DLJMD_VERSION=1.0)
 # add_compile_options(-DLJMD_VERSION=1.0 -pg)
