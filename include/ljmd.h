@@ -6,6 +6,7 @@
 #include <string.h>
 #include <ctype.h>
 #include <stdlib.h>
+#include <mpi.h>
 #include <math.h>
 #include <sys/time.h>
 
@@ -25,6 +26,8 @@ struct _mdsys{
     double *rx, *ry, *rz;
     double *vx, *vy, *vz;
     double *fx, *fy, *fz;
+    double *cx, *cy, *cz;
+    
 };
 typedef struct _mdsys mdsys_t;
 
@@ -36,7 +39,7 @@ extern double pbc(double x, const double boxby2, const double Box);
 
 extern void ekin(mdsys_t *sys);
 
-extern void force(mdsys_t *sys);
+extern void force(mdsys_t *sys, int rank, int size, MPI_Comm comm);
 
 extern void velverlet_step1(mdsys_t *sys);
 
@@ -46,6 +49,9 @@ extern void output(mdsys_t *sys, FILE *erg, FILE *traj);
 
 extern int get_a_line(FILE *fp, char *buf);
 
+extern void allocate_mem(mdsys_t *sys);
+
 extern void cleanup(mdsys_t *sys);
+
 
 #endif

@@ -1,8 +1,5 @@
-#include <stdio.h>
-#include <string.h>
-#include <ctype.h>
-#include <stdlib.h>
 #include <math.h>
+#include <mpi.h>
 #include <sys/time.h>
 #include "ljmd.h"
 
@@ -11,26 +8,13 @@ const double mvsq2e=2390.05736153349;
 
 void velverlet_step1(mdsys_t *sys) {
     int i;
-    double natoms = sys->natoms;
-    double mass = sys->mass;
-    double dt = sys->dt;
-    double *fx = sys->fx;
-    double *fy = sys->fy;
-    double *fz = sys->fz;
-    double *vx = sys->vx;
-    double *vy = sys->vy;
-    double *vz = sys->vz;
-    double *rx = sys->rx;
-    double *ry = sys->ry;
-    double *rz = sys->rz;
-    double constant = 0.5 * dt * 1.0 / mvsq2e * 1.0 / mass;
-    for (i = 0; i < natoms; ++i) {
-        vx[i] += constant * fx[i];
-        vy[i] += constant * fy[i];
-        vz[i] += constant * fz[i];
-        rx[i] += dt * sys->vx[i];
-        ry[i] += dt * sys->vy[i];
-        rz[i] += dt * sys->vz[i];
+    for (i = 0; i < sys->natoms; ++i) {
+        sys->vx[i] += 0.5 * sys->dt / mvsq2e * sys->fx[i] / sys->mass;
+        sys->vy[i] += 0.5 * sys->dt / mvsq2e * sys->fy[i] / sys->mass;
+        sys->vz[i] += 0.5 * sys->dt / mvsq2e * sys->fz[i] / sys->mass;
+        sys->rx[i] += sys->dt * sys->vx[i];
+        sys->ry[i] += sys->dt * sys->vy[i];
+        sys->rz[i] += sys->dt * sys->vz[i];
     }
 
 }
@@ -39,91 +23,85 @@ void velverlet_step2(mdsys_t *sys) {
     /* compute forces and potential energy */
     //force(sys);
     int i;
-    double natoms = sys->natoms;
-    double mass = sys->mass;
-    double dt = sys->dt;
-    double *fx = sys->fx;
-    double *fy = sys->fy;
-    double *fz = sys->fz;
-    double *vx = sys->vx;
-    double *vy = sys->vy;
-    double *vz = sys->vz;
-    double constant = 0.5 * dt * 1.0 / mvsq2e * 1.0 / mass;
-    for (i = 0; i < natoms; ++i) {
-        vx[i] += constant * fx[i];
-        vy[i] += constant * fy[i];
-        vz[i] += constant * fz[i];
+    for (i = 0; i < sys->natoms; ++i) {
+        sys->vx[i] += 0.5 * sys->dt / mvsq2e * sys->fx[i] / sys->mass;
+        sys->vy[i] += 0.5 * sys->dt / mvsq2e * sys->fy[i] / sys->mass;
+        sys->vz[i] += 0.5 * sys->dt / mvsq2e * sys->fz[i] / sys->mass;
     }
 }
 
+void force(mdsys_t *sys, int rank, int size, MPI_Comm comm) {
+    double epot_local = 0.0;  // Local potential energy for each rank
 
+    // Initialize forces to zero
+    double epot =0.0;
+    azzero(sys->cx, sys->natoms);
+    azzero(sys->cy, sys->natoms);
+    azzero(sys->cz, sys->natoms);
 
-/* compute forces */
-void force(mdsys_t *sys) 
-{
-    int i, j;
-    double r, ffac;
-    double rx1, ry1, rz1, rcsq, rsq, rxi, ryi, rzi;
-    double c12, c6;
-    double *fx = sys->fx;
-    double *fy = sys->fy;
-    double *fz = sys->fz;
-    double *rx = sys->rx;
-    double *ry = sys->ry;
-    double *rz = sys->rz;
-    double natoms = sys->natoms;
-    double epsilon = sys->epsilon;
-    double sigma = sys->sigma;
-    double rcut = sys->rcut;
+    // Broadcast particle positions to all ranks
+    MPI_Bcast(sys->rx, sys->natoms, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+    MPI_Bcast(sys->ry, sys->natoms, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+    MPI_Bcast(sys->rz, sys->natoms, MPI_DOUBLE, 0, MPI_COMM_WORLD);
 
-    /* zero energy and forces */
-    sys->epot = 0.0;
-    azzero(fx, natoms);
-    azzero(fy, natoms);
-    azzero(fz, natoms);
+    // Get rank and size
+//    int rank, size;
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    MPI_Comm_size(MPI_COMM_WORLD, &size);
 
-    /* precompute some constants */
-    c12 = 4.0 * epsilon * pow(sigma, 12.0);
-    c6 = 4.0 * epsilon * pow(sigma, 6.0);
-    rcsq = rcut * rcut;
-    double Box = sys->box;
-    double halfbox = 0.5 * sys->box;
+    // Calculate chunk size for each rank
+    int chunk_size = sys->natoms / size;
+    int remainder = sys->natoms % size;
 
-    for (i = 0; i < (natoms) - 1; ++i) {
-        rxi = sys->rx[i];
-        ryi = sys->ry[i];
-        rzi = sys->rz[i];
-        for (j = i + 1; j < (natoms); ++j) {
+    // Calculate start and end indices for each rank
+    int start_idx = rank * chunk_size + (rank < remainder ? rank : remainder);
+    int end_idx = start_idx + chunk_size + (rank < remainder ? 1 : 0);
 
-            /* get distance between particle i and j */
-            rx1 = pbc(rxi - rx[j], halfbox, Box);
-            ry1 = pbc(ryi - ry[j], halfbox, Box);
-            rz1 = pbc(rzi - rz[j], halfbox, Box);
-            rsq = rx1 * rx1 + ry1 * ry1 + rz1 * rz1;
+    // Precompute constants for force and potential energy calculations
+    double rcsq = sys->rcut * sys->rcut;
+    double c6 = sys->sigma * sys->sigma * sys->sigma * sys->sigma * sys->sigma * sys->sigma;
+    double c12 = 4.0 * sys->epsilon * c6 * c6;
+    c6 *= 4.0 * sys->epsilon;
 
-            /* compute force and energy if within cutoff */
+    // Loop over assigned atoms (Newton's third law applied here)
+    for (int i = start_idx; i < end_idx; ++i) {
+        double rx_i = sys->rx[i];
+        double ry_i = sys->ry[i];
+        double rz_i = sys->rz[i];
+
+        for (int j = i + 1; j < sys->natoms; ++j) {
+            // Calculate distance between atoms i and j
+            double rx = pbc(rx_i - sys->rx[j], 0.5 * sys->box, sys->box);
+            double ry = pbc(ry_i - sys->ry[j], 0.5 * sys->box, sys->box);
+            double rz = pbc(rz_i - sys->rz[j], 0.5 * sys->box, sys->box);
+            double rsq = rx * rx + ry * ry + rz * rz;
+
+            // Apply cutoff distance
             if (rsq < rcsq) {
-                double r2inv, r6inv, r12inv;
-                
-                // Precompute reciprocal of distance squared
-                r2inv = 1.0 / rsq;
-                r6inv = r2inv * r2inv * r2inv; // r^(-6)
-                r12inv = r6inv * r6inv;        // r^(-12)
-                    
-                // Force factor
-                ffac = (12.0 * c12 * r12inv - 6.0 * c6 * r6inv) * r2inv;
-
-                // Accumulate potential energy
-                sys->epot += c12 * r12inv - c6 * r6inv;
+                double rinv = 1.0 / rsq;
+                double rinv6 = rinv * rinv * rinv;
+                double rinv12 = rinv6 * rinv6;
+                double ffac = (12.0 * c12 * rinv12 - 6.0 * c6 * rinv6) * rinv;
+                epot_local += (c12 * rinv12 - c6 * rinv6);
 
                 // Update forces
-                fx[i] += rx1 * ffac;
-                fy[i] += ry1 * ffac;
-                fz[i] += rz1 * ffac;
-                fx[j] -= rx1 * ffac;
-                fy[j] -= ry1 * ffac;
-                fz[j] -= rz1 * ffac;
+                sys->cx[i] += rx * ffac;
+                sys->cy[i] += ry * ffac;
+                sys->cz[i] += rz * ffac;
+
+                sys->cx[j] -= rx * ffac;  // Newton's third law
+                sys->cy[j] -= ry * ffac;  // Newton's third law
+                sys->cz[j] -= rz * ffac;  // Newton's third law
             }
         }
     }
+
+    // Reduce forces from all ranks into global arrays
+    MPI_Reduce(sys->cx, sys->fx, sys->natoms, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
+    MPI_Reduce(sys->cy, sys->fy, sys->natoms, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
+    MPI_Reduce(sys->cz, sys->fz, sys->natoms, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
+
+    // Reduce potential energy across ranks
+    MPI_Reduce(&epot_local, &sys->epot, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
 }
+

@@ -7,13 +7,11 @@
 #include "ljmd.h"
 
 
-//const double kboltz=0.0019872067;
-//const double mvsq2e=2390.05736153349;
+
 extern const double kboltz;
 extern const double mvsq2e;
+
 /* helper function: get current time in seconds since epoch */
-
-
 double wallclock()
 {
         struct timeval t;
@@ -54,4 +52,23 @@ void ekin(mdsys_t *sys)
         sys->ekin += constant * (vx[i]*vx[i] + vy[i]*vy[i] + vz[i]*vz[i]);
     }
     sys->temp = sys->ekin * constant2;
+}
+
+allocate_mem(mdsys_t *sys){
+
+    sys->rx=(double *)malloc(sys->natoms*sizeof(double));
+    sys->ry=(double *)malloc(sys->natoms*sizeof(double));
+    sys->rz=(double *)malloc(sys->natoms*sizeof(double));
+    sys->vx=(double *)malloc(sys->natoms*sizeof(double));
+    sys->vy=(double *)malloc(sys->natoms*sizeof(double));
+    sys->vz=(double *)malloc(sys->natoms*sizeof(double));
+    sys->fx=(double *)malloc(sys->natoms*sizeof(double));
+    sys->fy=(double *)malloc(sys->natoms*sizeof(double));
+    sys->fz=(double *)malloc(sys->natoms*sizeof(double));
+
+    //allocate memory for auxiliary
+    sys->cx=(double *)malloc(sys->natoms*sizeof(double));
+    sys->cy=(double *)malloc(sys->natoms*sizeof(double));
+    sys->cz=(double *)malloc(sys->natoms*sizeof(double));
+
 }
