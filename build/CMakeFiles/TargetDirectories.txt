@@ -1,4 +1,0 @@
-/home/christian/Desktop/MHPC_LECTURES/11_week*/G2_version2/build/CMakeFiles/mdlib.dir
-/home/christian/Desktop/MHPC_LECTURES/11_week*/G2_version2/build/CMakeFiles/ljmd.dir
-/home/christian/Desktop/MHPC_LECTURES/11_week*/G2_version2/build/CMakeFiles/edit_cache.dir
-/home/christian/Desktop/MHPC_LECTURES/11_week*/G2_version2/build/CMakeFiles/rebuild_cache.dir
