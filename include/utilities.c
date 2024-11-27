@@ -6,8 +6,6 @@
 #include <sys/time.h>
 #include "ljmd.h"
 
-
-
 extern const double kboltz;
 extern const double mvsq2e;
 
@@ -19,22 +17,6 @@ double wallclock()
         return ((double) t.tv_sec) + 1.0e-6*((double) t.tv_usec);
 }
 
-/* helper function: zero out an array */
-void azzero(double *d, const int n)
-{
-    int i;
-    for (i=0; i<n; ++i) {
-        d[i]=0.0;
-    }
-}
-
-/* helper function: apply minimum image convention */
-double pbc(double x, const double boxby2, const double Box)
-{
-    while (x >  boxby2) x -= Box;
-    while (x < -boxby2) x += Box;
-    return x;
-}
 
 /* compute kinetic energy */
 void ekin(mdsys_t *sys)

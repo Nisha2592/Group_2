@@ -136,7 +136,6 @@ int main(int argc, char **argv)
         velverlet_step2(&sys);
         ekin(&sys);
     }
-    /**************************************************/
 
     /* clean up: close files, free memory */
     if(!my_rank){
