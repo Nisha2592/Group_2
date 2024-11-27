@@ -6,8 +6,10 @@
 #include <sys/time.h>
 #include "ljmd.h"
 
+
 const double kboltz=0.0019872067;
 const double mvsq2e=2390.05736153349;
+
 
 void velverlet_step1(mdsys_t *sys) {
     int i;
@@ -35,6 +37,7 @@ void velverlet_step1(mdsys_t *sys) {
 
 }
 
+
 void velverlet_step2(mdsys_t *sys) {
     /* compute forces and potential energy */
     //force(sys);
@@ -57,14 +60,13 @@ void velverlet_step2(mdsys_t *sys) {
 }
 
 
-
 /* compute forces */
 void force(mdsys_t *sys) 
 {
     int i, j;
     double r, ffac;
     double rx1, ry1, rz1, rcsq, rsq, rxi, ryi, rzi;
-    double c12, c6;
+    double c12, c6, ssigma12, ssigma6;
     double *fx = sys->fx;
     double *fy = sys->fy;
     double *fz = sys->fz;
@@ -83,8 +85,10 @@ void force(mdsys_t *sys)
     azzero(fz, natoms);
 
     /* precompute some constants */
-    c12 = 4.0 * epsilon * pow(sigma, 12.0);
-    c6 = 4.0 * epsilon * pow(sigma, 6.0);
+    ssigma6 = sigma * sigma * sigma * sigma * sigma * sigma;
+    ssigma12 = ssigma6 * sigma * sigma * sigma * sigma * sigma * sigma;
+    c12 = 4.0 * epsilon * ssigma12;
+    c6 = 4.0 * epsilon * ssigma6;
     rcsq = rcut * rcut;
     double Box = sys->box;
     double halfbox = 0.5 * sys->box;
