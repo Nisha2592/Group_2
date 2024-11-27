@@ -30,8 +30,6 @@ int main(int argc, char **argv)
     int nprint, i;
     
     char restfile[BLEN], trajfile[BLEN];
-
-
     FILE *fp,*traj,*erg;
     mdsys_t sys;
     double t_start;
@@ -40,29 +38,9 @@ int main(int argc, char **argv)
 
     t_start = wallclock();
 
-    /* read input file */
-    if(!my_rank){
-      if(get_a_line(stdin,line)) return 1;
-      sys.natoms=atoi(line);
-      if(get_a_line(stdin,line)) return 1;
-      sys.mass=atof(line);
-      if(get_a_line(stdin,line)) return 1;
-      sys.epsilon=atof(line);
-      if(get_a_line(stdin,line)) return 1;
-      sys.sigma=atof(line);
-      if(get_a_line(stdin,line)) return 1;
-      sys.rcut=atof(line);
-      if(get_a_line(stdin,line)) return 1;
-      sys.box=atof(line);
-      if(get_a_line(stdin,restfile)) return 1;
-      if(get_a_line(stdin,trajfile)) return 1;
-      if(get_a_line(stdin,ergfile)) return 1;
-      if(get_a_line(stdin,line)) return 1;
-      sys.nsteps=atoi(line);
-      if(get_a_line(stdin,line)) return 1;
-      sys.dt=atof(line);
-      if(get_a_line(stdin,line)) return 1;
-      nprint=atoi(line);
+   /* read input file */
+    if(my_rank == 0){
+    reading(line, &sys, restfile, trajfile, ergfile, &nprint);
     }    
 
     //broadcast input data to other processes
@@ -75,13 +53,12 @@ int main(int argc, char **argv)
     MPI_Bcast(&sys.dt, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
     MPI_Bcast(&sys.box, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
     MPI_Bcast(&nprint, 1, MPI_INT, 0, MPI_COMM_WORLD);
-
-
-    /* allocate memory */
-    allocate_mem(&sys);
+ 
+     /* allocate memory */
+      allocation(&sys);
 
     /* read restart. Only process zero.*/
-    if (!my_rank){
+    if (my_rank == 0){
       fp=fopen(restfile,"r");
       if(fp) {
         for (i=0; i<sys.natoms; ++i) {
@@ -99,15 +76,15 @@ int main(int argc, char **argv)
         perror("cannot read restart file");
         return 3;
       }
-
-    }
+}
 
     /* initialize forces and energies across all processes.*/
     sys.nfi=0;
     force(&sys, my_rank, comm_size, MPI_COMM_WORLD);
     ekin(&sys);
 
-    if (!my_rank){
+  /* output only for master */
+    if (my_rank == 0){
       erg=fopen(ergfile,"w");
       traj=fopen(trajfile,"w");
 
@@ -118,14 +95,15 @@ int main(int argc, char **argv)
     }
 
     /* reset timer */
-    t_start = wallclock();
+   // t_start = wallclock();
 
     /**************************************************/
     /* main MD loop */
+      t_start = wallclock();
     for(sys.nfi=1; sys.nfi <= sys.nsteps; ++sys.nfi) {
 
         /* write output, if requested */
-        if (!my_rank){
+        if (my_rank == 0){
           if ((sys.nfi % nprint) == 0){
               output(&sys, erg, traj);
           }
@@ -138,19 +116,16 @@ int main(int argc, char **argv)
     }
 
     /* clean up: close files, free memory */
-    if(!my_rank){
+    if(my_rank == 0){
       printf("Simulation Done. Run time: %10.3fs\n", wallclock()-t_start);
-    }
-    
-
-    if(!my_rank){
+   
       fclose(erg);
       fclose(traj);
     }
 
     cleanup(&sys);
-
     MPI_Finalize();
  
     return 0;
 }
+

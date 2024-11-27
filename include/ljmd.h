@@ -26,7 +26,7 @@ struct _mdsys{
     double *vx, *vy, *vz;
     double *fx, *fy, *fz;
     double *cx, *cy, *cz;
-    
+    int my_rank, comm_size;    
     int natoms,nfi,nsteps;
 };
 typedef struct _mdsys mdsys_t;
@@ -64,9 +64,12 @@ extern void output(mdsys_t *sys, FILE *erg, FILE *traj);
 
 extern int get_a_line(FILE *fp, char *buf);
 
-extern void allocate_mem(mdsys_t *sys);
+extern void reading(char *ll, mdsys_t *sys, char *restfile, char *trajfile, char *ergfile, int *nprint);
+
+extern void allocation(mdsys_t *sys);
 
 extern void cleanup(mdsys_t *sys);
 
 
 #endif
+
