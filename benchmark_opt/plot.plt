@@ -12,5 +12,5 @@ set grid
 set key top left
 
 # Plot the data
-plot "benchmark_data.dat" using 1:1 with linespoints title "Non-Optimized" lc rgb "red" lw 2 pt 7, \
-     "benchmark_data.dat" using 1:2 with linespoints title "Optimized" lc rgb "blue" lw 2 pt 7
+plot "benchmark_data.dat" using 1:2 with linespoints title "Non-Optimized" lc rgb "red" lw 2 pt 7, \
+     "benchmark_data.dat" using 1:3 with linespoints title "Optimized" lc rgb "blue" lw 2 pt 7
