@@ -61,6 +61,8 @@ extern void output(mdsys_t *sys, FILE *erg, FILE *traj);
 
 extern int get_a_line(FILE *fp, char *buf);
 
+void reading(char *ll, mdsys_t *sys, char *restfile, char *trajfile, char *ergfile, int *nprint);
+
 extern void cleanup(mdsys_t *sys);
 
 #endif
