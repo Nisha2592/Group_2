@@ -8,11 +8,11 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "/home/christian/Desktop/MHPC_LECTURES/11_week*/Group_2/include/cleanup.c" "CMakeFiles/mdlib.dir/include/cleanup.c.o" "gcc" "CMakeFiles/mdlib.dir/include/cleanup.c.o.d"
-  "/home/christian/Desktop/MHPC_LECTURES/11_week*/Group_2/include/force.c" "CMakeFiles/mdlib.dir/include/force.c.o" "gcc" "CMakeFiles/mdlib.dir/include/force.c.o.d"
-  "/home/christian/Desktop/MHPC_LECTURES/11_week*/Group_2/include/input.c" "CMakeFiles/mdlib.dir/include/input.c.o" "gcc" "CMakeFiles/mdlib.dir/include/input.c.o.d"
-  "/home/christian/Desktop/MHPC_LECTURES/11_week*/Group_2/include/output.c" "CMakeFiles/mdlib.dir/include/output.c.o" "gcc" "CMakeFiles/mdlib.dir/include/output.c.o.d"
-  "/home/christian/Desktop/MHPC_LECTURES/11_week*/Group_2/include/utilities.c" "CMakeFiles/mdlib.dir/include/utilities.c.o" "gcc" "CMakeFiles/mdlib.dir/include/utilities.c.o.d"
+  "/home/nicola/HPC/Group_2/include/cleanup.c" "CMakeFiles/mdlib.dir/include/cleanup.c.o" "gcc" "CMakeFiles/mdlib.dir/include/cleanup.c.o.d"
+  "/home/nicola/HPC/Group_2/include/force.c" "CMakeFiles/mdlib.dir/include/force.c.o" "gcc" "CMakeFiles/mdlib.dir/include/force.c.o.d"
+  "/home/nicola/HPC/Group_2/include/input.c" "CMakeFiles/mdlib.dir/include/input.c.o" "gcc" "CMakeFiles/mdlib.dir/include/input.c.o.d"
+  "/home/nicola/HPC/Group_2/include/output.c" "CMakeFiles/mdlib.dir/include/output.c.o" "gcc" "CMakeFiles/mdlib.dir/include/output.c.o.d"
+  "/home/nicola/HPC/Group_2/include/utilities.c" "CMakeFiles/mdlib.dir/include/utilities.c.o" "gcc" "CMakeFiles/mdlib.dir/include/utilities.c.o.d"
   )
 
 # Targets to which this target links which contain Fortran sources.

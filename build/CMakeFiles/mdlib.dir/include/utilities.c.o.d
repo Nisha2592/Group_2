@@ -1,6 +1,6 @@
 CMakeFiles/mdlib.dir/include/utilities.c.o: \
- /home/christian/Desktop/MHPC_LECTURES/11_week*/Group_2/include/utilities.c \
- /usr/include/stdc-predef.h /usr/include/stdio.h \
+ /home/nicola/HPC/Group_2/include/utilities.c /usr/include/stdc-predef.h \
+ /usr/include/stdio.h \
  /usr/include/x86_64-linux-gnu/bits/libc-header-start.h \
  /usr/include/features.h /usr/include/features-time64.h \
  /usr/include/x86_64-linux-gnu/bits/wordsize.h \
@@ -61,4 +61,4 @@ CMakeFiles/mdlib.dir/include/utilities.c.o: \
  /usr/include/x86_64-linux-gnu/bits/mathcalls.h \
  /usr/include/x86_64-linux-gnu/sys/time.h \
  /usr/lib/gcc/x86_64-linux-gnu/13/include/omp.h \
- /home/christian/Desktop/MHPC_LECTURES/11_week*/Group_2/include/ljmd.h
+ /home/nicola/HPC/Group_2/include/ljmd.h

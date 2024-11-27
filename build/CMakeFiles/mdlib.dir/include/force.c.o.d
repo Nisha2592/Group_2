@@ -1,6 +1,6 @@
 CMakeFiles/mdlib.dir/include/force.c.o: \
- /home/christian/Desktop/MHPC_LECTURES/11_week*/Group_2/include/force.c \
- /usr/include/stdc-predef.h /usr/include/stdio.h \
+ /home/nicola/HPC/Group_2/include/force.c /usr/include/stdc-predef.h \
+ /usr/include/stdio.h \
  /usr/include/x86_64-linux-gnu/bits/libc-header-start.h \
  /usr/include/features.h /usr/include/features-time64.h \
  /usr/include/x86_64-linux-gnu/bits/wordsize.h \
@@ -60,4 +60,4 @@ CMakeFiles/mdlib.dir/include/force.c.o: \
  /usr/include/x86_64-linux-gnu/bits/mathcalls-helper-functions.h \
  /usr/include/x86_64-linux-gnu/bits/mathcalls.h \
  /usr/include/x86_64-linux-gnu/sys/time.h \
- /home/christian/Desktop/MHPC_LECTURES/11_week*/Group_2/include/ljmd.h
+ /home/nicola/HPC/Group_2/include/ljmd.h

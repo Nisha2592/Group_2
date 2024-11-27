@@ -1,6 +1,6 @@
 CMakeFiles/mdlib.dir/include/input.c.o: \
- /home/christian/Desktop/MHPC_LECTURES/11_week*/Group_2/include/input.c \
- /usr/include/stdc-predef.h /usr/include/stdio.h \
+ /home/nicola/HPC/Group_2/include/input.c /usr/include/stdc-predef.h \
+ /usr/include/stdio.h \
  /usr/include/x86_64-linux-gnu/bits/libc-header-start.h \
  /usr/include/features.h /usr/include/features-time64.h \
  /usr/include/x86_64-linux-gnu/bits/wordsize.h \
@@ -29,8 +29,8 @@ CMakeFiles/mdlib.dir/include/input.c.o: \
  /usr/include/strings.h /usr/include/ctype.h \
  /usr/include/x86_64-linux-gnu/bits/endian.h \
  /usr/include/x86_64-linux-gnu/bits/endianness.h \
- /home/christian/Desktop/MHPC_LECTURES/11_week*/Group_2/include/ljmd.h \
- /usr/include/stdlib.h /usr/include/x86_64-linux-gnu/bits/waitflags.h \
+ /home/nicola/HPC/Group_2/include/ljmd.h /usr/include/stdlib.h \
+ /usr/include/x86_64-linux-gnu/bits/waitflags.h \
  /usr/include/x86_64-linux-gnu/bits/waitstatus.h \
  /usr/include/x86_64-linux-gnu/sys/types.h \
  /usr/include/x86_64-linux-gnu/bits/types/clock_t.h \

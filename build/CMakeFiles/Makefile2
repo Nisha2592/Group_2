@@ -54,10 +54,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = "/home/christian/Desktop/MHPC_LECTURES/11_week*/Group_2"
+CMAKE_SOURCE_DIR = /home/nicola/HPC/Group_2
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = "/home/christian/Desktop/MHPC_LECTURES/11_week*/Group_2/build"
+CMAKE_BINARY_DIR = /home/nicola/HPC/Group_2/build
 
 #=============================================================================
 # Directory level rules for the build root directory
@@ -83,14 +83,14 @@ clean: CMakeFiles/ljmd.dir/clean
 CMakeFiles/mdlib.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/mdlib.dir/build.make CMakeFiles/mdlib.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/mdlib.dir/build.make CMakeFiles/mdlib.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir="/home/christian/Desktop/MHPC_LECTURES/11_week*/Group_2/build/CMakeFiles" --progress-num=3,4,5,6,7,8 "Built target mdlib"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/nicola/HPC/Group_2/build/CMakeFiles --progress-num=3,4,5,6,7,8 "Built target mdlib"
 .PHONY : CMakeFiles/mdlib.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/mdlib.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start "/home/christian/Desktop/MHPC_LECTURES/11_week*/Group_2/build/CMakeFiles" 6
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/nicola/HPC/Group_2/build/CMakeFiles 6
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/mdlib.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start "/home/christian/Desktop/MHPC_LECTURES/11_week*/Group_2/build/CMakeFiles" 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/nicola/HPC/Group_2/build/CMakeFiles 0
 .PHONY : CMakeFiles/mdlib.dir/rule
 
 # Convenience name for target.
@@ -109,14 +109,14 @@ CMakeFiles/mdlib.dir/clean:
 CMakeFiles/ljmd.dir/all: CMakeFiles/mdlib.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/ljmd.dir/build.make CMakeFiles/ljmd.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/ljmd.dir/build.make CMakeFiles/ljmd.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir="/home/christian/Desktop/MHPC_LECTURES/11_week*/Group_2/build/CMakeFiles" --progress-num=1,2 "Built target ljmd"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/nicola/HPC/Group_2/build/CMakeFiles --progress-num=1,2 "Built target ljmd"
 .PHONY : CMakeFiles/ljmd.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/ljmd.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start "/home/christian/Desktop/MHPC_LECTURES/11_week*/Group_2/build/CMakeFiles" 8
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/nicola/HPC/Group_2/build/CMakeFiles 8
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/ljmd.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start "/home/christian/Desktop/MHPC_LECTURES/11_week*/Group_2/build/CMakeFiles" 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/nicola/HPC/Group_2/build/CMakeFiles 0
 .PHONY : CMakeFiles/ljmd.dir/rule
 
 # Convenience name for target.
