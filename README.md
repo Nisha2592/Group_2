@@ -22,7 +22,7 @@ These flags enable aggressive optimization techniques, including loop unrolling,
 ## Benchmark:
 ### Optimization stage:
 To evaluate the performance impact of optimization, we employed Valgrind and Kcachegrind to profile the optimized and non-optimized code. The profiling process involved running the following:  
-* `valgrind --tool=callgrind ./our_executable`
+* `valgrind --tool=callgrind ./executable`
 * `kcachegrind callgrind.out.<pid>`
 
 In the case of non-optimized code, we have the following table and call graph,  
@@ -38,7 +38,7 @@ In the case of non-optimized code, we have the following table and call graph,
 </div>
 
 
-By applying Newton's Third Law, the `pbc()` function becomes solely dependent on `j`, as the `i`-dependent calculations are precomputed before entering the `j` loop. Thus, studying argon for 108 atoms, we reduced the timing from 300.780 s to 146 s. We employ strength reduction to replace costly pow() function calls with more efficient multiplication operations. Additionally, we avoid unnecessary sqrt() calculations by comparing squared values directly within conditional statements. Adding the previous optimizations together reduced the timing from 300.780 s to 80 s. We can see this easily from the following call graph,
+By applying Newton's Third Law, we reduce the counting by half. Consider in advance that the `i`-dependent calculations are precomputed before entering the `j` loop resulting in faster `pbc()` execution. Thus, studying argon for 108 atoms, we reduced the timing from 300.780 s to 146 s. We employ strength reduction to replace costly pow() function calls with more efficient multiplication operations. Additionally, we avoid unnecessary sqrt() calculations by comparing squared values directly within conditional statements. Adding the previous optimizations together reduced the timing from 300.780 s to 80 s. We can see this easily from the following call graph,
 
 <div style="text-align: center;">
     <img src="benchmark_opt/opt.jpg" alt="non-opt" width="1000"/>
@@ -53,7 +53,7 @@ where now the calls for pbc is negligible and the force function only call itsel
 While optimizing larger systems can significantly boost their performance, smaller systems might not see much improvement.  
 
 ## MPI
-This report analyzes the performance of an optimized computational code executed on varying numbers of atoms using different configurations: An optimized code without message passing interface and with MPI employing 2, 4, 6, 8 and 10 processors. In this implementation, MPI is primarily leveraged to accelerate the computation of forces by distributing the workload across multiple processors. The Force function is adapted to handle this parallelization through the following steps:
+We analyze the performance of an optimized computational code executed on varying numbers of atoms using different configurations: An optimized code without message passing interface and with MPI employing 2, 4, 6, 8 and 10 processors. In this implementation, MPI is primarily leveraged to accelerate the computation of forces by distributing the workload across multiple processors. The Force function is adapted to handle this parallelization through the following steps:
 * Atom positions are shared across all processes using broadcast communication.
 * Process-specific indices are defined to control loop iterations, ensuring tasks are divided based on the total number of processes and their individual ranks.
 * Dedicated buffers are utilized to store the computed forces for each process.
