@@ -36,7 +36,7 @@ void velverlet_step1(mdsys_t *sys) {
     #if defined(_OPENMP)
     #pragma omp parallel for simd
     #endif
-    for (i = 0; i < sys->natoms; ++i) {
+    for (int i = 0; i < sys->natoms; ++i) {
         vx[i] += constant * fx[i];
         vy[i] += constant * fy[i];
         vz[i] += constant * fz[i];
@@ -106,8 +106,6 @@ void force(mdsys_t *sys)
     #else
     int tid = 0;
     #endif
-
->>>>>>> mpi
     fx = sys->cx + (tid * sys->natoms);
     fy = sys->cy + (tid * sys->natoms);
     fz = sys->cz + (tid * sys->natoms);
