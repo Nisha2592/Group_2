@@ -41,6 +41,16 @@ if(ENABLE_OPENMP)
   endif()
 endif()
 
+option(ENABLE_MORSE "Enable Morse potential computation" OFF)
+
+# Add compile definition based on the option
+if(ENABLE_MORSE)
+    message(STATUS "Morse potential enabled.")
+    add_compile_definitions(_MORSE)
+else()
+    message(STATUS "Morse potential disabled.")
+endif()
+
 option(ENABLE_TESTING "Enable building unit tests" OFF)
 if(ENABLE_TESTING)
   enable_testing()
