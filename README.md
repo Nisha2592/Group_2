@@ -9,16 +9,13 @@ This work presents a optimized, and parallelized Lennard-Jones Molecular Dynamic
         | Nisha Nisha            --> MPI                   ---> GitHub: Nisha2592
 
 ## Compiler Options:
-This code offers various compilation options, including serial, optimized, MPI, OpenMP, and a hybrid OpenMP-MPI approach. The provided `CMakeLists.txt` file facilitates the build process by using:
-        * `cmake -S . -B build`  
-        * `make serial`         --> To compile the serial code  
-        * `make mpi`            --> To compile the MPI version  
-        * `make openmp`         --> To compile the openMP version  
-        * `make hybrid`         --> To compile the Hybrid MPI+openMP version  
-Note that both the OpenMP and MPI versions are built upon the optimized codebase. To enable unit testing for force, utilities, and Verlet functions, add `-DENABLE_TESTING=ON` to the CMake cache.  
+This code offers various compilation options, including optimized, MPI, OpenMP, and a hybrid OpenMP-MPI approach. The provided `CMakeLists.txt` file facilitates the build process by using `cmake -S . -B build` with the following variables on:
+        * `-DENABLE_MPI`            --> To compile with the MPI version  
+        * `-DENABLE_OPENMP`         --> To compile with the openMP version  
+Note that both the OpenMP and MPI versions are built upon the optimized codebase. To enable unit testing for force, utilities, and Verlet functions, add `-DENABLE_TESTING=ON` to the CMake cache in the serial_code version.  
 To optimize performance across all implementations, we utilized the following compiler flags:  
 
-        `-Wall -O3 -ffast-math -fexpensive-optimizations -ffp-contract=fast -msse3`  
+        `-O3 -ffast-math -fexpensive-optimizations -ffp-contract=fast -msse3`  
 
 These flags enable aggressive optimization techniques, including loop unrolling, function inlining, and vectorization.
 
