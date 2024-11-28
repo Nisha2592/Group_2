@@ -71,12 +71,12 @@ TEST_F(forceTest, ForceCalculation) {
     sys->rx[1] = 1.0; // Within the cutoff distance
     sys->ry[1] = 0.0;
     sys->rz[1] = 0.0;
-
+    double r = sqrt((sys->rx[1]-sys->rx[0])*(sys->rx[1]-sys->rx[0])+(sys->ry[1]-sys->ry[0])*(sys->ry[1]-sys->ry[0])+(sys->rz[1]-sys->rz[0])*(sys->rz[1]-sys->rz[0]));
     // Call the force calculation
     force(sys);
 
     // Check potential energy and force calculation inside the cutoff
-    double expected_potential_energy = 4.0 * (pow(1.0 / 1.0, 12) - pow(1.0 / 1.0, 6));
+    double expected_potential_energy = 4.0 * sys->epsilon * (pow(sys->sigma / r, 12.0) - pow(sys->sigma / r, 6.0));
     ASSERT_NEAR(sys->epot, expected_potential_energy, 1e-5);
 
     // Check if forces are non-zero (as they should be inside the cutoff)

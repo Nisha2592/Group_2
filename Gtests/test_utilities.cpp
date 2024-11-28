@@ -4,7 +4,7 @@
 
 TEST(TestAzzero, doubles) {
   double *buf = new double[10];
-  for (int i = 0; i < 10; i++) buf[i] = i +1;
+  for (int i = 0; i < 10; i++) buf[i] = i + 1;
   ASSERT_DOUBLE_EQ(buf[1], 2.0);
   ASSERT_DOUBLE_EQ(buf[5], 6.0);
   ASSERT_DOUBLE_EQ(buf[9], 10.0);
@@ -34,11 +34,10 @@ class PBCTest:
       sys->box = 10;
   }
 
-  void TearDown() {
+  void Free() {
     delete[] sys->rx;
     delete[] sys->ry;
     delete[] sys->rz;
-
     delete sys;
   }
 };

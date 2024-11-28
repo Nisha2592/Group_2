@@ -45,7 +45,7 @@ class VerletTest:
       sys->fz[0] = 1.0;
       sys->fz[1] = 0.2;
     }
-    void TearDown() {
+    void Free() {
       delete[] sys->rx;
       delete[] sys->vx;
       delete[] sys->fx;
