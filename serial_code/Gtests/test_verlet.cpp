@@ -1,5 +1,6 @@
 #include "gtest/gtest.h"
 #include "../include/ljmd.h"
+#include "../include/utilities.c"
 #include "../include/force.c"
 
 class VerletTest:
