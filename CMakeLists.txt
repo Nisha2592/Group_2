@@ -6,6 +6,11 @@ if(POLICY CMP0135)
   cmake_policy(SET CMP0135 OLD)
 endif()
 
+
+# for MPI
+find_package(MPI REQUIRED)
+include_directories(${MPI_INCLUDE_PATH})
+
 # Add OpenMP support
 find_package(OpenMP REQUIRED)
 if(OpenMP_FOUND)
@@ -16,14 +21,14 @@ else()
   message(FATAL_ERROR "OpenMP not found. Please install OpenMP support for your compiler.")
 endif()
 
-# Library and executable definitions
+# # Unit testing
+# Library and executable definition
 add_library(mdlib SHARED include/utilities.c include/output.c include/input.c include/force.c include/cleanup.c include/allocation.c)
-add_compile_options(-Wall -DOPENMP -O3 -mfma -ftree-vectorize -fopenmp-simd -mtune=native -ffast-math -fexpensive-optimizations -fomit-frame-pointer -march=native -ffp-contract=fast -msse3 -DLJMD_VERSION=1.0)
+add_compile_options(-Wall -DOPENMP -O3 -mfma -ftree-vectorize -fopenmp-simd -ffast-math -fexpensive-optimizations -fomit-frame-pointer -march=native  -ffp-contract=fast -msse3 -DLJMD_VERSION=1.0)
 
 add_executable(ljmd src/main.c)
-target_link_libraries(ljmd mdlib m OpenMP::OpenMP_C)
+target_link_libraries(ljmd mdlib m ${MPI_LIBRARIES} OpenMP::OpenMP_C)
 
-# Unit testing
 option(ENABLE_TESTING "Enable building unit tests" OFF)
 if(ENABLE_TESTING)
   enable_testing()
