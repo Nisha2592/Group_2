@@ -56,6 +56,31 @@ where now the calls for pbc is negligible and the force function only call itsel
 While optimizing larger systems can significantly boost their performance, smaller systems might not see much improvement.  
 
 ## MPI
+This report analyzes the performance of an optimized computational code executed on varying numbers of atoms using different configurations: An optimized code without message passing interface and with MPI employing 2, 4, 6, 8 and 10 processors. In this implementation, MPI is primarily leveraged to accelerate the computation of forces by distributing the workload across multiple processors. The Force function is adapted to handle this parallelization through the following steps:
+* Atom positions are shared across all processes using broadcast communication.
+* Process-specific indices are defined to control loop iterations, ensuring tasks are divided based on the total number of processes and their individual ranks.
+* Dedicated buffers are utilized to store the computed forces for each process.
+* Finally, the computed forces and total potential energy from all processes are gathered and consolidated into the rank 0 process using reduction operations.
+
+This approach is layered on top of the pre-existing optimized codebase to achieve enhanced performance and scalability. The benchmarking data and plot is structured as follows:
+
+| Number of Atoms |   W/O MPI   |   MPI (2 Procs)   |   MPI (4 Procs)   |   MPI (6 Procs)   |   MPI (8 Procs)   |   MPI (10 Procs)|
+|:---------------:|:-----------:|:----------------:|:----------------:|:----------------:|:----------------:|:------------------:|
+|       108       |    1.610    |       0.621      |       0.805      |       0.616      |      0.5118      |       0.478       |
+|      2916       |   66.781    |      33.94       |      35.297      |      24.049      |      18.182      |      14.986       |
+|     78732       |   600.235   |     303.002      |      342.45      |      257.68      |     211.958      |      176.681      |
+
+<div style="text-align: center;">
+      <img src="benchmark_mpi/benchmark.png" alt="benchmark" width="1000"/>
+  </div>
+
+### Analysis on basis of scalability:
+* Larger systems (e.g. 78732 atoms) benefit more significantly from MPI parallelization due to the increased workload justifying the overhead of communication between processors. 
+* Smaller systems (e.g. 108 atoms) exhibit diminishing returns when scaling up the number of processors.
+
+### Analysis on basis of efficiency:
+* At 108 atoms, the time reduction between 8 and 10 processors is marginal, which indicates a point of saturation where additional processors contribute little to performace.
+* For 78732 atoms, the improvement remains notable even with 10 processors, which suggest that workload is large enough to benefit from additional parallel resources.
 
 ## OpenMP
 
