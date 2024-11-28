@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 
 # Group_2
 
@@ -14,6 +15,12 @@
 This work presents a optimized, and parallelized Lennard-Jones Molecular Dynamics simulator. The code is designed to efficiently simulate large-scale molecular systems.
 ## Collaborators:
 
+=======
+# Lennard-Jones Molecular Dynamic Simulator
+This work presents a optimized, and parallelized Lennard-Jones Molecular Dynamics simulator. The code is designed to efficiently simulate large-scale molecular systems.
+## Collaborators:
+
+>>>>>>> mpi
         | Christian Tica         --> openMP                ---> GitHub: cristiano-mhpc
 
         | Nicola Aladrah         --> Optimization          ---> GitHub: NicolaAdrah
@@ -71,5 +78,9 @@ While optimizing larger systems can significantly boost their performance, small
 
 ## OpenMP
 
+<<<<<<< HEAD
 ## Hybrid
 
+=======
+## Hybrid
+>>>>>>> mpi

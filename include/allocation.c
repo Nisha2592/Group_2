@@ -1,7 +1,11 @@
 #include <stdio.h>
 #include <ctype.h>
-#include "ljmd.h"
+// #include "ljmd.h"
+// #include <omp.h>
+#if defined(_OPENMP)
 #include <omp.h>
+#endif
+#include "ljmd.h"
 
 void allocation(mdsys_t *sys)
 {
@@ -17,12 +21,22 @@ void allocation(mdsys_t *sys)
     sys->fy=(double *)malloc(sys->natoms*sizeof(double));
     sys->fz=(double *)malloc(sys->natoms*sizeof(double));
 
-    sys->ekin = 0.0;
-    sys->nthreads = omp_get_max_threads();
+//     sys->ekin = 0.0;
+//     sys->nthreads = omp_get_max_threads();
 
-    //auxilliary arrays 
-    sys->cx = (double *)malloc(sys->natoms*sys->nthreads*sizeof(double));
-    sys->cy = (double *)malloc(sys->natoms*sys->nthreads*sizeof(double));
-    sys->cz = (double *)malloc(sys->natoms*sys->nthreads*sizeof(double));
+//     //auxilliary arrays 
+//     sys->cx = (double *)malloc(sys->natoms*sys->nthreads*sizeof(double));
+//     sys->cy = (double *)malloc(sys->natoms*sys->nthreads*sizeof(double));
+//     sys->cz = (double *)malloc(sys->natoms*sys->nthreads*sizeof(double));
+
+    #if defined(_OPENMP)
+      sys->nthreads = omp_get_max_threads();
+    #else 
+      sys->nthreads=1;
+    #endif
+    //allocate memory for enlarged auxilliary buffers 
+    sys->cx=(double *)malloc(sys->nthreads*sys->natoms*sizeof(double));
+    sys->cy=(double *)malloc(sys->nthreads*sys->natoms*sizeof(double));
+    sys->cz=(double *)malloc(sys->nthreads*sys->natoms*sizeof(double));
 
 }

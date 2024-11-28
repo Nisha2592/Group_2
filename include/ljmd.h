@@ -25,10 +25,8 @@ struct _mdsys{
     double *vx, *vy, *vz;
     double *fx, *fy, *fz;
     int natoms,nfi,nsteps,nthreads;
-
     //auxilliary buffers
     double *cx, *cy, *cz;
-
 };
 typedef struct _mdsys mdsys_t;
 
