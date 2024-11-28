@@ -1,7 +1,0 @@
-digraph "callgraph" {
-  F556c7aff0690 [label="0x00000000048421f0\n7 625 097 174"];
-  F556c7aff0d50 [label="pbc\n7 625 097 174"];
-  F556c7aff3570 [label="force\n7 625 097 174"];
-  F556c7aff0690 -> F556c7aff0d50 [weight=3,label="7 625 097 174 (346 714 668x)"];
-  F556c7aff3570 -> F556c7aff0690 [weight=3,label="7 625 097 174 (317 812 637x)"];
-}
