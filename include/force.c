@@ -3,9 +3,12 @@
 #include <ctype.h>
 #include <stdlib.h>
 #include <math.h>
+
+#ifdef USE_MPI
 #include <mpi.h>
+#endif
+
 #include <sys/time.h>
-#include <omp.h>
 #include "ljmd.h"
 
 #if defined(_OPENMP)
@@ -18,7 +21,7 @@ const double mvsq2e=2390.05736153349;
 
 
 void velverlet_step1(mdsys_t *sys) {
-    
+    int i;
     double natoms = sys->natoms;
     double mass = sys->mass;
     double dt = sys->dt;
@@ -36,7 +39,7 @@ void velverlet_step1(mdsys_t *sys) {
     #if defined(_OPENMP)
     #pragma omp parallel for simd
     #endif
-    for (int i = 0; i < sys->natoms; ++i) {
+    for (i = 0; i < sys->natoms; ++i) {
         vx[i] += constant * fx[i];
         vy[i] += constant * fy[i];
         vz[i] += constant * fz[i];
@@ -64,7 +67,6 @@ void velverlet_step2(mdsys_t *sys) {
     #if defined(_OPENMP)
     #pragma omp parallel for simd
     #endif
-
     for (i = 0; i < sys->natoms; ++i) {
         vx[i] += constant * fx[i];
         vy[i] += constant * fy[i];
@@ -77,17 +79,22 @@ void velverlet_step2(mdsys_t *sys) {
 void force(mdsys_t *sys) 
 {
     double epot=0.0;
-    int size, rank;
+    int size = 1;
+    int rank = 0;
+    #ifdef USE_MPI
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
-
+    #endif
     double epsilon = sys->epsilon;
     double sigma = sys->sigma;
     double rcut = sys->rcut;
+
+    #ifdef USE_MPI
     //Broadcast particle positions to all ranks
     MPI_Bcast(sys->rx, sys->natoms, MPI_DOUBLE, 0, MPI_COMM_WORLD);
     MPI_Bcast(sys->ry, sys->natoms, MPI_DOUBLE, 0, MPI_COMM_WORLD);
     MPI_Bcast(sys->rz, sys->natoms, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+    #endif
 
     #if defined(_OPENMP)
     #pragma omp parallel reduction(+:epot)
@@ -122,7 +129,6 @@ void force(mdsys_t *sys)
     c12 = 4.0 * epsilon * ssigma12;
     c6 = 4.0 * epsilon * ssigma6;
     rcsq = rcut * rcut;
-
     double Box = sys->box;
     double halfbox = 0.5 * sys->box;
 
@@ -146,12 +152,15 @@ void force(mdsys_t *sys)
             /* compute force and energy if within cutoff */
             if (rsq < rcsq) {
                 double r2inv, r6inv, r12inv;
+                
                 // Precompute reciprocal of distance squared
                 r2inv = 1.0 / rsq;
                 r6inv = r2inv * r2inv * r2inv; // r^(-6)
                 r12inv = r6inv * r6inv;        // r^(-12)
+                    
                 // Force factor
                 ffac = (12.0 * c12 * r12inv - 6.0 * c6 * r6inv) * r2inv;
+
                 // Accumulate potential energy
                 epot += c12 * r12inv - c6 * r6inv;
 
@@ -189,7 +198,8 @@ void force(mdsys_t *sys)
     }
 
     }//end openmp parallel region
-
+    
+    #ifdef USE_MPI
     //Reduce forces from all ranks into global arrays
     MPI_Reduce(sys->cx, sys->fx, sys->natoms, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
     MPI_Reduce(sys->cy, sys->fy, sys->natoms, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
@@ -197,5 +207,15 @@ void force(mdsys_t *sys)
 
     //Reduce potential energy across ranks
     MPI_Reduce(&epot, &sys->epot, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
+    #else
+    for (int i = 0; i < sys->natoms; i++){
+      sys->fx[i] = sys->cx[i];
+      sys->fy[i] = sys->cy[i];
+      sys->fz[i] = sys->cz[i];
+    } 
+
+    sys->epot = epot;
+
+    #endif
 
 }
