@@ -31,10 +31,10 @@ typedef struct _mdsys mdsys_t;
 extern double wallclock();
 
 /* helper function: zero out an array */
-void azzero(double *d, const int n);
+extern void azzero(double *d, const int n);
 
 /* helper function: apply minimum image convention */
-double pbc(double x, const double boxby2);
+extern double pbc(double x, const double boxby2);
 
 extern void ekin(mdsys_t *sys);
 
