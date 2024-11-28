@@ -10,7 +10,11 @@
 #include <ctype.h>
 #include <stdlib.h>
 #include <math.h>
+
+#ifdef USE_MPI
 #include <mpi.h>
+#endif
+
 #include <sys/time.h>
 #include "../include/ljmd.h"
 
@@ -19,12 +23,14 @@
 /* main */
 int main(int argc, char **argv)
 {
-    int my_rank, comm_size;
-
+    int my_rank = 0;
+    int comm_size = 1;
+    
+    #ifdef USE_MPI
     MPI_Init(&argc, &argv);
     MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
     MPI_Comm_size(MPI_COMM_WORLD, &comm_size);
-    
+    #endif
 
     int nprint, i;
     char restfile[BLEN], trajfile[BLEN], ergfile[BLEN], line[BLEN];
@@ -35,6 +41,7 @@ int main(int argc, char **argv)
     if (!my_rank){
       printf("LJMD version %3.1f\n", LJMD_VERSION);
     }
+    
     t_start = wallclock();
 
     /* read input file */
@@ -43,6 +50,7 @@ int main(int argc, char **argv)
     }
     
     //broadcast input data to other processes
+    #ifdef USE_MPI
     MPI_Bcast(&sys.epsilon, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
     MPI_Bcast(&sys.sigma, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
     MPI_Bcast(&sys.rcut, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
@@ -52,7 +60,8 @@ int main(int argc, char **argv)
     MPI_Bcast(&sys.dt, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
     MPI_Bcast(&sys.box, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
     MPI_Bcast(&nprint, 1, MPI_INT, 0, MPI_COMM_WORLD);
-    
+    #endif
+
     /* allocate memory */
     allocation(&sys);
 
@@ -73,11 +82,12 @@ int main(int argc, char **argv)
         azzero(sys.fz, sys.natoms);
       } else {
         perror("cannot read restart file");
+        #ifdef USE_MPI
         MPI_Abort(MPI_COMM_WORLD, 3);
+        #endif
         return 3;
       }
     }else{
-        
       azzero(sys.vx, sys.natoms);
       azzero(sys.vy, sys.natoms);
       azzero(sys.vz, sys.natoms);
@@ -130,8 +140,9 @@ int main(int argc, char **argv)
     }
 
     cleanup(&sys);
-
+    #ifdef USE_MPI
     MPI_Finalize();
+    #endif
  
     return 0;
 }

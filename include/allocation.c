@@ -24,6 +24,7 @@ void allocation(mdsys_t *sys)
     #else 
       sys->nthreads=1;
     #endif
+    
     //allocate memory for enlarged auxilliary buffers 
     sys->cx=(double *)malloc(sys->nthreads*sys->natoms*sizeof(double));
     sys->cy=(double *)malloc(sys->nthreads*sys->natoms*sizeof(double));
