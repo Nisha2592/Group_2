@@ -19,8 +19,6 @@
 /* main */
 int main(int argc, char **argv)
 {
-
-
     int my_rank, comm_size;
 
     MPI_Init(&argc, &argv);
