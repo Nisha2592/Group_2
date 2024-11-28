@@ -3,7 +3,11 @@
 #include <ctype.h>
 #include <stdlib.h>
 #include <math.h>
+
+#ifdef USE_MPI
 #include <mpi.h>
+#endif
+
 #include <sys/time.h>
 #include "ljmd.h"
 
@@ -76,18 +80,22 @@ void velverlet_step2(mdsys_t *sys) {
 void force(mdsys_t *sys) 
 {
     double epot=0.0;
-    int size, rank;
+    int size = 1;
+    int rank = 0;
+    #ifdef USE_MPI
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
-
+    #endif
     double epsilon = sys->epsilon;
     double sigma = sys->sigma;
     double rcut = sys->rcut;
 
+    #ifdef USE_MPI
     //Broadcast particle positions to all ranks
     MPI_Bcast(sys->rx, sys->natoms, MPI_DOUBLE, 0, MPI_COMM_WORLD);
     MPI_Bcast(sys->ry, sys->natoms, MPI_DOUBLE, 0, MPI_COMM_WORLD);
     MPI_Bcast(sys->rz, sys->natoms, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+    #endif
 
     #if defined(_OPENMP)
     #pragma omp parallel reduction(+:epot)
@@ -192,7 +200,8 @@ void force(mdsys_t *sys)
     }
 
     }//end openmp parallel region
-
+    
+    #ifdef USE_MPI
     //Reduce forces from all ranks into global arrays
     MPI_Reduce(sys->cx, sys->fx, sys->natoms, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
     MPI_Reduce(sys->cy, sys->fy, sys->natoms, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
@@ -200,5 +209,15 @@ void force(mdsys_t *sys)
 
     //Reduce potential energy across ranks
     MPI_Reduce(&epot, &sys->epot, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
+    #else
+    for (int i = 0; i < sys->natoms; i++){
+      sys->fx[i] = sys->cx[i];
+      sys->fy[i] = sys->cy[i];
+      sys->fz[i] = sys->cz[i];
+    } 
+
+    sys->epot = epot;
+
+    #endif
 
 }
