@@ -20,9 +20,14 @@ void allocation(mdsys_t *sys)
     sys->fz=(double *)malloc(sys->natoms*sizeof(double));
 
     #if defined(_OPENMP)
-      sys->nthreads = omp_get_max_threads();
+    #pragma omp parallel
+    {
+    if(0 == omp_get_thread_num()){
+      sys->nthreads = omp_get_num_threads();
+    }
+    }
     #else 
-      sys->nthreads=1;
+    sys->nthreads = 1;
     #endif
     
     //allocate memory for enlarged auxilliary buffers 
