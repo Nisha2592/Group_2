@@ -106,7 +106,7 @@ The same strong scaling behavior in the OpenMP + MPI hybrid can also be observed
 
 ![](hybrid.png)
 
-No apparent scaling is observed in the case of the 108 number of atoms. Strong scalbility is exhibited in the case of 78732 number of atoms.
+No apparent scaling is observed in the case of the 108 number of atoms. Strong scalbility is exhibited in the case of 78732 and 2916 number of atoms.
 
 ### Comparative Performance
 
