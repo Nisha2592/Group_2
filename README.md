@@ -98,13 +98,13 @@ In this section, we analyze the speed-up achieved by implementing shared-memory 
 | 2916            | 23.154      | 12.397      | 7.832       | 5.777        |
 | 78732           | 177.017     | 91.052      | 48.4745     | 36.794       |
 
-![](/home/christian/Desktop/MHPC_LECTURES/11_week*/timings/omp_timings_78732/omptimes.png)
+![](omptimes.png)
 
 ## Hybrid OpenMP-MPI
 
 The same strong scaling behavior in the OpenMP + MPI hybrid can also be observed. Specifically in the plot below, we set `omp_num_threads` equal to 8 and varied the number of mpi processes. The results are derived by running the source code in Leonardo in the Booster partition.
 
-![](/home/christian/Desktop/MHPC_LECTURES/11_week*/timings/Hybrid_timings/hybrid_timings_8_threads_2916/hybrid.png)
+![](hybrid.png)
 
 No apparent scaling is observed in the case of the 108 number of atoms. Strong scalbility is exhibited in the case of 78732 number of atoms.
 
@@ -114,6 +114,6 @@ In this section, we give a summary of the comparative execution times of the dif
 
 
 
-![](/home/christian/Desktop/MHPC_LECTURES/11_week*/G2_only_final/compare2916.png)
+![](compare2916.png)
 
-![](/home/christian/Desktop/MHPC_LECTURES/11_week*/G2_only_final/comp78732.png)
+![](comp78732.png)
