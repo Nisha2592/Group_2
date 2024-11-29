@@ -104,7 +104,7 @@ void force(mdsys_t *sys)
     Each thread will have its own local copy. */    
     double *fx, *fy, *fz;
     int i,j;
-    double r, ffac;
+    double ffac;
     double rcsq, rsq;
     double c12, c6, ssigma12, ssigma6;
 
@@ -130,7 +130,13 @@ void force(mdsys_t *sys)
     c6 = 4.0 * epsilon * ssigma6;
     rcsq = rcut * rcut;
     double Box = sys->box;
-    double halfbox = 0.5 * sys->box;
+    double halfbox = 0.5 * Box;
+
+    #if defined(_MORSE)
+    double alpha = 1.03;
+    double dr = 2 * alpha * epsilon;
+    double r, exponent, morse_pot;
+    #endif
 
     int ii;
     int stride = size * sys->nthreads;
@@ -141,16 +147,27 @@ void force(mdsys_t *sys)
             //out of bound
             break;
         }
-
+        double rx1 = sys->rx[ii];
+        double ry1 = sys->ry[ii];
+        double rz1 = sys->rz[ii];
         for (j = ii + 1; j < (sys->natoms); ++j) {
             /* get distance between particle ii and j */
-            double rx = pbc(sys->rx[ii] - sys->rx[j], halfbox, Box);
-            double ry = pbc(sys->ry[ii] - sys->ry[j], halfbox, Box);
-            double rz = pbc(sys->rz[ii] - sys->rz[j], halfbox, Box);
+            double rx = pbc(rx1 - sys->rx[j], halfbox, Box);
+            double ry = pbc(ry1 - sys->ry[j], halfbox, Box);
+            double rz = pbc(rz1 - sys->rz[j], halfbox, Box);
             rsq = rx * rx + ry * ry + rz * rz;
 
             /* compute force and energy if within cutoff */
             if (rsq < rcsq) {
+                #if defined(_MORSE)
+                r = sqrt(rsq);
+				exponent = alpha * r - 1.12246 * sigma;
+				morse_pot =
+				epsilon * (exp(-exponent) * exp(-exponent) - 2 * exp(-exponent));
+				double ffac =
+				dr * (exp(-2 * exponent) - exp(-exponent)) / rsq;
+                epot += morse_pot;
+                #else
                 double r2inv, r6inv, r12inv;
                 
                 // Precompute reciprocal of distance squared
@@ -163,7 +180,7 @@ void force(mdsys_t *sys)
 
                 // Accumulate potential energy
                 epot += c12 * r12inv - c6 * r6inv;
-
+                #endif
                 // Update forces
                 fx[ii] += rx * ffac;
                 fy[ii] += ry * ffac;

@@ -1,5 +1,6 @@
 #include "gtest/gtest.h"
 #include "../include/ljmd.h"
+#include "../include/utilities.c"
 #include <cmath>
 
 TEST(TestAzzero, doubles) {
@@ -46,8 +47,8 @@ TEST_F(PBCTest, doubles) {
    int i = 0;
    int j = 1;
    ASSERT_NE(sys,nullptr);
-   double rx=pbc(sys->rx[i] - sys->rx[j], 0.5*sys->box, sys->box);
-   double ry=pbc(sys->ry[i] - sys->ry[j], 0.5*sys->box, sys->box);
-   double rz=pbc(sys->rz[i] - sys->rz[j], 0.5*sys->box, sys->box);
+   double rx=pbc(sys->rx[i] - sys->rx[j], 0.5*sys->box);
+   double ry=pbc(sys->ry[i] - sys->ry[j], 0.5*sys->box);
+   double rz=pbc(sys->rz[i] - sys->rz[j], 0.5*sys->box);
    ASSERT_DOUBLE_EQ(rx*rx + ry*ry + rz*rz, 12);
 }
